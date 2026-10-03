@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, CheckCircle2, Sparkles } from 'lucide-react';
+import { CheckCircle2, Sparkles } from 'lucide-react';
 
 const tools = [
   'AI Email Writer',
@@ -12,7 +12,7 @@ const tools = [
   'YouTube/Video Script Generator'
 ];
 
-export function HomePage() {
+export default function HomePage() {
   return (
     <>
       <section className="section-shell py-16 md:py-24">
@@ -29,17 +29,13 @@ export function HomePage() {
               Create business documents, marketing content, emails, proposals and more in seconds.
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
-              <Link href="/signup" className="primary-btn">
-                Try Free
-              </Link>
-              <Link href="/tools" className="secondary-btn">
-                Explore AI Tools
-              </Link>
+              <Link href="/signup" className="primary-btn">Try Free</Link>
+              <Link href="/tools" className="secondary-btn">Explore AI Tools</Link>
             </div>
             <div className="mt-8 flex flex-wrap gap-6 text-sm text-slate-600">
-              <div><span className="font-bold text-slate-900">5k+</span> small businesses powered</div>
-              <div><span className="font-bold text-slate-900">30+</span> smart templates</div>
-              <div><span className="font-bold text-slate-900">4.9/5</span> user rating</div>
+              <div><span className="font-bold text-slate-900">5k+</span> businesses powered</div>
+              <div><span className="font-bold text-slate-900">30+</span> templates</div>
+              <div><span className="font-bold text-slate-900">4.9/5</span> average rating</div>
             </div>
           </div>
 
@@ -53,15 +49,15 @@ export function HomePage() {
               <div className="space-y-4 text-sm text-slate-200">
                 <div className="rounded-xl bg-slate-900 p-4">
                   <div className="font-medium text-white">AI Email Writer</div>
-                  <div className="mt-2 text-slate-300">Subject: Follow-up on new website project</div>
+                  <div className="mt-2 text-slate-300">Subject: Follow-up on website proposal</div>
                 </div>
                 <div className="rounded-xl bg-slate-900 p-4">
                   <div className="font-medium text-white">Marketing Copy</div>
-                  <div className="mt-2 text-slate-300">Headline: Grow your revenue with smarter systems.</div>
+                  <div className="mt-2 text-slate-300">Headline: Grow faster with smarter systems.</div>
                 </div>
                 <div className="rounded-xl bg-slate-900 p-4">
                   <div className="font-medium text-white">Proposal Draft</div>
-                  <div className="mt-2 text-slate-300">Ready to send — 6-step digital marketing plan.</div>
+                  <div className="mt-2 text-slate-300">Ready to send, simplified for your client.</div>
                 </div>
               </div>
             </div>
@@ -73,14 +69,14 @@ export function HomePage() {
         <div className="section-shell">
           <div className="mb-10 max-w-2xl">
             <div className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-300">Why BizAI Tools</div>
-            <h2 className="mt-3 text-3xl font-bold">Built for business owners who want more time and better results.</h2>
+            <h2 className="mt-3 text-3xl font-bold">Built for owners who want more time and better results.</h2>
           </div>
 
           <div className="grid gap-6 md:grid-cols-3">
             {[
-              ['Professional outputs', 'Create polished business messages, proposals, plans, and page copy without the hassle.'],
-              ['Faster decisions', 'Turn rough ideas into usable documents in seconds and move from strategy to action.'],
-              ['Affordable growth', 'Simple plans that scale with your business and help you market with confidence.']
+              ['Professional outputs', 'Generate polished business content without wasting hours writing from scratch.'],
+              ['Faster decisions', 'Turn rough ideas into clear documents, proposals, and campaigns in minutes.'],
+              ['Affordable growth', 'Scale from 5 free generations a day to a full business plan with premium access.']
             ].map(([title, text]) => (
               <div key={title} className="rounded-2xl border border-slate-700 bg-slate-800 p-6">
                 <CheckCircle2 className="mb-4 text-brand-400" size={28} />
@@ -104,7 +100,7 @@ export function HomePage() {
               <div className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-brand-600">AI tool</div>
               <div className="mb-4 text-lg font-bold text-slate-900">{tool}</div>
               <Link href="/tools" className="inline-flex items-center gap-2 text-sm font-semibold text-brand-600">
-                Use tool <ArrowRight size={14} />
+                Use tool
               </Link>
             </div>
           ))}

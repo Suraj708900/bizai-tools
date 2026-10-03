@@ -1,0 +1,14 @@
+export function buildToolPrompt(tool: string, prompt: string) {
+  const templates: Record<string, string> = {
+    'AI Email Writer': 'Write a clear and persuasive email for a business audience. Use a professional tone, concise copy, and a strong call to action.\n\nBusiness request:\n',
+    'Invoice Generator': 'Create a clean invoice with a business name, invoice number, services, tax, total, and payment terms. Use a professional style appropriate for a small business client.\n\nBusiness request:\n',
+    'Business Plan Generator': 'Create a concise business plan with overview, market opportunity, services, strategy, and financial outlook. Keep it practical and professional for a small business owner.\n\nBusiness request:\n',
+    'Marketing Copy Generator': 'Create high-converting marketing copy with a strong headline, key message, and clear call to action. Keep it persuasive and business-friendly.\n\nBusiness request:\n',
+    'Social Media Post Generator': 'Create an engaging social media post that feels authentic and brand-ready. Add a headline, body copy, and call to action.\n\nBusiness request:\n',
+    'Business Proposal Generator': 'Draft a professional business proposal. Include a problem statement, scope of work, deliverables, timeline, pricing, and closing summary.\n\nBusiness request:\n',
+    'Customer Review Reply Generator': 'Write a warm, professional response to a customer review. Be appreciative, confident, and brand-appropriate.\n\nBusiness request:\n',
+    'YouTube/Video Script Generator': 'Write a natural, audience-friendly YouTube script with a hook, key points, and CTA. Keep it clear and engaging for a business or marketing topic.\n\nBusiness request:\n'
+  };
+
+  return `${templates[tool] || 'Create a polished business document for this request.\n\nBusiness request:\n'}${prompt}`;
+}

@@ -7,7 +7,7 @@ export function SiteFooter() {
         <div>
           <div className="mb-4 text-xl font-bold text-white">BizAI Tools</div>
           <p className="max-w-sm text-sm text-slate-400">
-            An all-in-one AI business assistant for creating smarter documents, campaigns, proposals, and workflows.
+            Professional AI business tools for proposals, documents, marketing, and growth operations.
           </p>
         </div>
 

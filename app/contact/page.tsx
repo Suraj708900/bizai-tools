@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function ContactPage() {
   return (
     <div className="section-shell py-16 md:py-20">

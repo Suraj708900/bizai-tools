@@ -1,15 +1,11 @@
+import React from 'react';
 import Link from 'next/link';
-import { Sparkles, Menu } from 'lucide-react';
-
-const navItems = [
-  { label: 'Home', href: '/' },
-  { label: 'AI Tools', href: '/tools' },
-  { label: 'Pricing', href: '/pricing' },
-  { label: 'Dashboard', href: '/dashboard' },
-  { label: 'Contact', href: '/contact' }
-];
+import { signIn, useSession, signOut } from 'next-auth/react';
+import { Menu, Sparkles } from 'lucide-react';
 
 export function SiteHeader() {
+  const { data: session, status } = useSession();
+
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur-md">
       <div className="section-shell flex items-center justify-between py-4">
@@ -23,20 +19,29 @@ export function SiteHeader() {
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
-          {navItems.map((item) => (
-            <Link key={item.href} href={item.href} className="text-sm font-medium text-slate-600 transition hover:text-brand-600">
-              {item.label}
-            </Link>
-          ))}
+          {['Home', 'AI Tools', 'Pricing', 'Dashboard', 'Contact'].map((label, index) => {
+            const hrefs = ['/', '/tools', '/pricing', '/dashboard', '/contact'];
+            const href = hrefs[index];
+            return (
+              <Link key={href} href={href} className="text-sm font-medium text-slate-600 transition hover:text-brand-600">
+                {label}
+              </Link>
+            );
+          })}
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-          <Link href="/login" className="secondary-btn px-4 py-2.5">
-            Login
-          </Link>
-          <Link href="/signup" className="primary-btn px-4 py-2.5">
-            Sign Up
-          </Link>
+          {status === 'authenticated' ? (
+            <>
+              <Link href="/dashboard" className="secondary-btn px-4 py-2.5">Dashboard</Link>
+              <button onClick={() => signOut()} className="primary-btn px-4 py-2.5">Sign Out</button>
+            </>
+          ) : (
+            <>
+              <Link href="/login" className="secondary-btn px-4 py-2.5">Login</Link>
+              <Link href="/signup" className="primary-btn px-4 py-2.5">Sign Up</Link>
+            </>
+          )}
         </div>
 
         <button className="rounded-xl border border-slate-200 p-2 md:hidden" aria-label="Menu">

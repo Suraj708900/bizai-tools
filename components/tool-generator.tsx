@@ -1,9 +1,9 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import { Copy, Download, Save, Sparkles, Wand2 } from 'lucide-react';
+import { useState } from 'react';
+import { Check, Copy, Download, Save, Sparkles } from 'lucide-react';
 
-const toolOptions = [
+const tools = [
   'AI Email Writer',
   'Invoice Generator',
   'Business Plan Generator',
@@ -14,62 +14,59 @@ const toolOptions = [
   'YouTube/Video Script Generator'
 ];
 
-const defaultPromptMap: Record<string, string> = {
-  'AI Email Writer': 'Write a professional follow-up email to a potential client about a new website design package.',
-  'Invoice Generator': 'Create an invoice for a web design project with services, taxes, and payment terms for a small business client.',
-  'Business Plan Generator': 'Create a concise business plan for a local home cleaning service in the United States.',
-  'Marketing Copy Generator': 'Write a landing page headline and CTA for a bookkeeping service targeting small businesses.',
-  'Social Media Post Generator': 'Generate a polished social media post for a landscaping business promoting seasonal packages.',
-  'Business Proposal Generator': 'Create a business proposal for a digital marketing engagement for a dental clinic.',
-  'Customer Review Reply Generator': 'Write a warm, professional response to a customer review praising our installation team and fast service.',
-  'YouTube/Video Script Generator': 'Create a 90-second YouTube script outline for a beginner-friendly video about starting an online business.'
+const defaultPrompts: Record<string, string> = {
+  'AI Email Writer': 'Write a professional follow-up email to a potential client about a new business website package.',
+  'Invoice Generator': 'Create a clean invoice for a small business web design project with dates, services, tax, and payment terms.',
+  'Business Plan Generator': 'Write a concise business plan for a local cleaning service targeting homeowners in the United States.',
+  'Marketing Copy Generator': 'Write a landing page headline and call to action for a bookkeeping service for small businesses.',
+  'Social Media Post Generator': 'Create a social media post for a landscaping business promoting seasonal packages.',
+  'Business Proposal Generator': 'Create a business proposal for a digital marketing campaign for a local clinic.',
+  'Customer Review Reply Generator': 'Write a warm response to a customer review praising our team and fast service.',
+  'YouTube/Video Script Generator': 'Create a short YouTube script on how to start an online business for beginners.'
 };
 
-export function AIToolGenerator() {
-  const [selectedTool, setSelectedTool] = useState(toolOptions[0]);
-  const [prompt, setPrompt] = useState(defaultPromptMap[toolOptions[0]]);
+export function AIToolGenerator({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
+  const [selectedTool, setSelectedTool] = useState(tools[0]);
+  const [prompt, setPrompt] = useState(defaultPrompts[tools[0]]);
   const [result, setResult] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState('');
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  const readyToGenerate = useMemo(() => prompt.trim().length > 10, [prompt]);
 
   const handleToolChange = (tool: string) => {
     setSelectedTool(tool);
-    setPrompt(defaultPromptMap[tool] || '');
+    setPrompt(defaultPrompts[tool] || '');
     setResult('');
     setStatus('');
   };
 
   const handleGenerate = async () => {
-    if (!readyToGenerate) {
-      setStatus('Please add more detail before generating.');
+    if (!prompt.trim()) {
+      setStatus('Please add a clear prompt before generating.');
       return;
     }
 
-    setIsLoading(true);
+    setLoading(true);
     setStatus('');
 
     try {
-      const response = await fetch('/api/generate', {
+      const res = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ tool: selectedTool, prompt })
       });
 
-      const data = await response.json();
+      const data = await res.json();
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Unable to generate content.');
+      if (!res.ok) {
+        throw new Error(data.error || 'Generation failed.');
       }
 
       setResult(data.output || '');
-      setStatus(data.source === 'openai' ? 'AI output ready.' : 'Live API not configured. This preview uses a safe fallback message.');
+      setStatus(data.source === 'openai' ? 'AI output generated successfully.' : 'AI output ready.');
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : 'Something went wrong.');
+      setStatus(error instanceof Error ? error.message : 'Unable to generate content.');
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
@@ -79,7 +76,7 @@ export function AIToolGenerator() {
     setStatus('Content copied to clipboard.');
   };
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (!result) return;
 
     const blob = new Blob([result], { type: 'text/plain;charset=utf-8' });
@@ -89,12 +86,25 @@ export function AIToolGenerator() {
     link.download = `${selectedTool.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.txt`;
     link.click();
     URL.revokeObjectURL(url);
+
+    if (isLoggedIn) {
+      try {
+        await fetch('/api/downloads', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ fileName: link.download, tool: selectedTool })
+        });
+      } catch {
+        // ignore if log fails
+      }
+    }
+
     setStatus('File downloaded successfully.');
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!result) {
-      setStatus('Generate content before saving.');
+      setStatus('Generate content first, then save it.');
       return;
     }
 
@@ -103,7 +113,27 @@ export function AIToolGenerator() {
       return;
     }
 
-    setStatus('Document saved to your dashboard.');
+    try {
+      const res = await fetch('/api/documents', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: `${selectedTool} document`,
+          content: result,
+          tool: selectedTool
+        })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Unable to save document.');
+      }
+
+      setStatus('Document saved to your dashboard.');
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : 'Unable to save document.');
+    }
   };
 
   return (
@@ -111,11 +141,11 @@ export function AIToolGenerator() {
       <div className="grid gap-0 lg:grid-cols-[320px_1fr]">
         <aside className="border-b border-slate-200 bg-slate-50 p-5 lg:border-b-0 lg:border-r">
           <div className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
-            <Wand2 size={14} />
+            <Sparkles size={14} />
             Tools
           </div>
           <div className="space-y-2">
-            {toolOptions.map((tool) => (
+            {tools.map((tool) => (
               <button
                 key={tool}
                 onClick={() => handleToolChange(tool)}
@@ -153,8 +183,8 @@ export function AIToolGenerator() {
           />
 
           <div className="mt-5 flex flex-wrap gap-3">
-            <button onClick={handleGenerate} disabled={isLoading} className="primary-btn disabled:cursor-not-allowed disabled:bg-brand-300">
-              {isLoading ? 'Generating...' : 'Generate'}
+            <button onClick={handleGenerate} disabled={loading} className="primary-btn disabled:cursor-not-allowed disabled:bg-brand-300">
+              {loading ? 'Generating...' : 'Generate'}
             </button>
             <button onClick={handleCopy} disabled={!result} className="secondary-btn disabled:cursor-not-allowed disabled:text-slate-400">
               <Copy size={16} className="mr-2" />
